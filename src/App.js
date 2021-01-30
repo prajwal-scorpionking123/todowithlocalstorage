@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import { Col, Container, Row } from "reactstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./App.css";
+import TodoForm from "./components/TodoForm";
+import Todos from "./components/Todo";
+const App = () => {
+  const [todos, setTodos] = useState([]);
 
-function App() {
+  useEffect(() => {
+    const localTodos = localStorage.getItem("todos");
+    if (localTodos) {
+      setTodos(JSON.parse(localTodos));
+    }
+  }, []);
+
+  const addTodos = async (todo) => {
+    setTodos([...todos, todo]);
+  };
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+  const markComplete = (id) => {
+    setTodos(todos.filter((todo) => todo.id !== id));
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+      <h1>Todo App with local storage</h1>
+      <Row>
+        <Col md-4>
+          <TodoForm addTodos={addTodos}></TodoForm>
+        </Col>
+        <Col md-4>
+          <Todos todos={todos} markComplete={markComplete} />
+        </Col>
+      </Row>
+    </Container>
   );
-}
+};
 
 export default App;
